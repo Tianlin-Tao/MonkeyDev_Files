@@ -1,0 +1,170 @@
+//
+//  MacOSX Product Types.xcspec
+//
+//  Copyright © 1999-2020 Apple Inc.  All rights reserved.
+//
+//  Product type specifications in the macOS platform.
+//
+(
+    // Java tool
+    {   Type = ProductType;
+        Identifier = com.apple.product-type.tool.java;
+        Name = "Java Command-line Tool";
+        Description = "Java Command-line tool";
+        IconNamePrefix = "TargetExecutable";
+        DefaultTargetName = "Java Command-line Tool";
+        DefaultBuildProperties = {
+            FULL_PRODUCT_NAME = "$(EXECUTABLE_NAME)";
+            REZ_EXECUTABLE = YES;
+            INSTALL_PATH = "/usr/local/bin";
+        };
+        IsJava = YES;
+        PackageTypes = (
+            com.apple.package-type.jarfile,   // default
+            com.apple.package-type.zipfile,
+            com.apple.package-type.javaclassfolder
+        );
+    },
+
+    // Java library (jar or zip file)
+    {   Type = ProductType;
+        Identifier = com.apple.product-type.library.java.archive;
+        Name = "Java Library";
+        Description = "Java library packaged as a Jar file, Zip file, or class folder";
+        IconNamePrefix = "TargetPlugin";
+        DefaultTargetName = "Java Library";
+        DefaultBuildProperties = {
+            FULL_PRODUCT_NAME = "$(PRODUCT_NAME)";
+            INSTALL_PATH = "/usr/local/lib";
+        };
+        IsJava = YES;
+        PackageTypes = (
+            com.apple.package-type.jarfile,   // default
+            com.apple.package-type.zipfile,
+            com.apple.package-type.javaclassfolder
+        );
+    },
+
+    // Java Application
+    {   Type = ProductType;
+        Identifier = com.apple.product-type.application.java;
+        BasedOn = com.apple.product-type.application;
+        Name = "Java Application";
+        Description = "Java Application";
+        DefaultTargetName = "Java Application";
+        DefaultBuildProperties = {
+            INFOPLIST_PATH = "";
+            PKGINFO_PATH = "";
+        };
+        IsJava = YES;
+    },
+    
+    // Xcode Extension
+    {
+        Type = ProductType;
+        Identifier = "com.apple.product-type.xcode-extension";
+        BasedOn = "com.apple.product-type.app-extension";
+        Name = "Xcode Extension";
+        Description = "Xcode Extension";
+        IconNamePrefix = XcodeExtension;
+        DefaultTargetName = "Xcode Extension";
+        "DefaultBuildProperties" = {
+            "CODE_SIGNING_ALLOWED" = YES;
+            "APPLICATION_EXTENSION_API_ONLY" = YES;
+            "PRODUCT_SPECIFIC_LDFLAGS" = "-e _XCExtensionMain -lXcodeExtension";
+            "PRODUCT_TYPE_FRAMEWORK_SEARCH_PATHS" = (
+                "$(inherited)",
+                "$(DEVELOPER_FRAMEWORKS_DIR)",
+            );
+            "PRODUCT_TYPE_LIBRARY_SEARCH_PATHS" = (
+                "$(inherited)",
+                "$(DEVELOPER_USR_DIR)/lib",
+            );
+            LD_RUNPATH_SEARCH_PATHS = (
+                "@loader_path/../Frameworks",
+            );
+            WRAPPER_EXTENSION = "appex";
+        };
+        PackageTypes = (
+            "com.apple.package-type.app-extension",
+        );
+        ProvisioningProfileSupported = YES;
+        ProvisioningProfileRequired = NO;
+        WantsBundleIdentifierEditing = YES;
+        WantsSigningEditing = YES;
+    },
+    
+    // Spotlight Importer
+    {
+        Type = ProductType;
+        Identifier = "com.apple.product-type.spotlight-importer";
+        BasedOn = "com.apple.product-type.bundle";
+        Class = PBXBundleProductType;
+        Name = "Spotlight Importer";
+        Description = "Spotlight Importer";
+        DefaultTargetName = "Spotlight";
+        "DefaultBuildProperties" = {
+            "CODE_SIGNING_ALLOWED" = YES;
+        };
+        PackageTypes = (
+            "com.apple.package-type.spotlight-importer",
+        );
+    },
+
+    // Copied from iOS specs to aid in build system diagnostic support.
+    // Later, we should put these in some central place.
+    {
+        Type = ProductType;
+        Identifier = "com.apple.product-type.app-extension.messages";
+        BasedOn = "com.apple.product-type.app-extension";
+    },
+
+    {
+        Type = ProductType;
+        Identifier = "com.apple.product-type.app-extension.messages-sticker-pack";
+        BasedOn = "com.apple.product-type.app-extension";
+        IsCapabilitiesUnsupported = YES;
+        WantsSimpleTargetEditing = YES;
+        DefaultBuildProperties = {
+            MESSAGES_APPLICATION_EXTENSION_PRODUCT_BINARY_SOURCE_PATH = "$(PLATFORM_DIR)/Library/Application Support/MessagesApplicationExtensionStub/MessagesApplicationExtensionStub";
+            ASSETCATALOG_COMPILER_INCLUDE_STICKER_CONTENT = YES;
+            ASSETCATALOG_COMPILER_TARGET_STICKERS_ICON_ROLE = "extension";
+            ASSETCATALOG_COMPILER_STICKER_PACK_IDENTIFIER_PREFIX = "$(PRODUCT_BUNDLE_IDENTIFIER).sticker-pack.";
+        };
+        AllowedBuildPhases = (
+            "com.apple.buildphase.resources",
+            "com.apple.buildphase.shell-script",
+        );
+        InfoPlistAdditions = {
+            LSApplicationIsStickerProvider = YES;
+        };
+    },
+
+    {
+        Type = ProductType;
+        Identifier = "com.apple.product-type.application.on-demand-install-capable";
+        BasedOn = "com.apple.product-type.application";
+        Name = "App Clip";
+        Description = "App Clip";
+        DefaultBuildProperties = {
+            ENABLE_ON_DEMAND_RESOURCES = NO;
+            ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR = none; // Don't include standalone icons to keep size down
+            PRODUCT_SPECIFIC_LDFLAGS = "$(inherited) -framework AppClip";
+            SKIP_INSTALL = YES;
+        };
+        DefaultEntitlements = {
+            "com.apple.developer.on-demand-install-capable" = YES;
+        };
+        SupportsOnDemandResources = NO;
+        IsEmbeddable = YES;
+        BuildPhaseInjectionsWhenEmbedding = (
+            {
+                BuildPhase = "CopyFiles";
+                Name = "Embed App Clips";
+                RunOnlyForDeploymentPostprocessing = NO;
+                DstSubFolderSpec = 16;
+                DstPath = "$(CONTENTS_FOLDER_PATH)/AppClips";
+            }
+        );
+    },
+)

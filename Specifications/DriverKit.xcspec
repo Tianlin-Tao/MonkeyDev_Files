@@ -1,0 +1,49 @@
+(
+    // Driver extension wrapper
+    {
+        Type = PackageType;
+        Identifier = com.apple.package-type.wrapper.driver-extension;
+        BasedOn = com.apple.package-type.wrapper.system-extension;
+        Name = "Driver Extension Wrapper";
+        Description = "Driver Extension Wrapper";
+        DefaultBuildSettings = {
+            PRODUCT_BUNDLE_PACKAGE_TYPE = "DEXT";
+        };
+        ProductReference = {
+            FileType = wrapper.driver-extension;
+            Name = "$(WRAPPER_NAME)";
+            IsLaunchable = NO;
+        };
+    },
+
+    // DriverKit driver
+    {   Type = ProductType;
+        Identifier = com.apple.product-type.driver-extension;
+        BasedOn = com.apple.product-type.system-extension;
+        Name = "DriverKit Driver";
+        Description = "DriverKit driver";
+        DefaultTargetName = "DriverKit Driver";
+        DefaultBuildProperties = {
+            SDKROOT = "driverkit";
+            MACH_O_TYPE = "mh_execute";
+            WRAPPER_SUFFIX = ".$(WRAPPER_EXTENSION)";
+            WRAPPER_EXTENSION = "dext";
+            INSTALL_PATH = "$(DEFAULT_DEXT_INSTALL_PATH)";
+            STRIP_STYLE = "debugging";
+
+            DEXT_FRAMEWORK_NAME = "DriverKit";
+            DEXT_FRAMEWORK = "$(SYSTEM_LIBRARY_DIR)/Frameworks/$(DEXT_FRAMEWORK_NAME).framework";
+
+            GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+
+            PRODUCT_NAME = "$(PRODUCT_BUNDLE_IDENTIFIER)";
+            PRODUCT_TYPE_HEADER_SEARCH_PATHS = "$(inherited) $(IIG_HEADERS_DIR)";
+        };
+        DefaultEntitlements = {
+            "com.apple.developer.driverkit" = YES;
+        };
+        PackageTypes = (
+            com.apple.package-type.wrapper.driver-extension,
+        );
+    },
+)
